@@ -1,17 +1,17 @@
 #include "tasks_rk2.h"
 #include <iostream>
 #include "queue"
+#include "lsfilofifo.h"
 using namespace std;
 int Node::countNodes=0;
+static int count = 0;
 Node::Node(){
     parent = nullptr;
     name=countNodes;
     ishere=false;
 }
 Node:: ~Node(){
-    parent= nullptr;
-    countNodes=0;
-    ishere=false;
+    std::destroy(listChilds.begin(),listChilds.end());
 }
 Node::Node(int nameNode){
     ishere=false;
@@ -56,8 +56,41 @@ int Graph::buildTreeBFS(int countNodes) {
     }
     return Node::countNodes;
 }
+int Graph::buildTreeDFS(int countNodes){
+    if(countNodes < 0)
+        return -1;
+    head = new Node;
+    count = 0;
+    head->name = count++;
+    buildTreeDFS(head, countNodes);
+    return 0;
+}
+void Graph::buildTreeDFS(Node* parent, int countNodes){
+    if(countNodes > 0)
+        for(int i = 0; i < countNodes; i++){
+            Node* f = new Node;
+            f->name = count++;
+            parent->listChilds.push_back(f);
+            buildTreeDFS(f, countNodes - 1);
+        }
+}
 void Graph::DFS(){
+    FILE* f = fopen("dfs.txt", "w");
+    DFS(head, f);
+    fclose(f);
+}
+void Graph::DFS(Node* parent, FILE* f) {
+    fprintf(f, "%d", parent->name);
+    if(parent->listChilds.size()){
+        fprintf(f, "%c", '{');
+    }
+    for (std::list<Node *>::iterator it = parent->listChilds.begin(); it != parent->listChilds.end(); it++) {
+        DFS(*it, f);
+        if (!(std::next(it) == parent->listChilds.end()))
+            fprintf(f, "%c", ',');
+    }
+    if(parent->listChilds.size())
+        fprintf(f, "%c", '}');
 
 }
-
 

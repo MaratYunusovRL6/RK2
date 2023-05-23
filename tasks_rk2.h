@@ -1,11 +1,10 @@
 //
 // Created by Admin on 22.05.2023.
 //
-
 #ifndef RK2_TASKS_RK2_H
 #define RK2_TASKS_RK2_H
-#include "queue"
 #include "list"
+#include "iostream"
 struct Node{
     Node();
     Node(int nameNode);
@@ -19,6 +18,8 @@ struct Node{
 class Graph{
 private:
     Node*head;
+    void buildTreeDFS(Node* parent, int countNodes);
+    void DFS(Node* parent, FILE* f);
 public:
     void DFS();
     void BFS();
